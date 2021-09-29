@@ -1,0 +1,27 @@
+{
+  "name": "ChatApp-SocketIO",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app/src/server.js",
+    "dev": "nodemon app/src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/levantai1010/ChatApp-SocketIO.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/levantai1010/ChatApp-SocketIO/issues"
+  },
+  "homepage": "https://github.com/levantai1010/ChatApp-SocketIO#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.13",
+    "socket.io": "^4.2.0",
+    "yarn": "^1.22.11"
+  }
+}
