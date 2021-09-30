@@ -1,7 +1,22 @@
-<script
-  src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"
-  integrity="sha512-WL6WGKMPBiM9PnHRYIn5YEtq0Z8XP4fkVb4qy7PP4vhmYQErJ/dySyXuFIMDf1eEYCXCrQrMJfkNwKc9gsjTjA=="
-  crossorigin="anonymous"
-  referrerpolicy="no-referrer"
-></script>;
-<script>var socket=io()</script>;
+const socket = io();
+
+// acknowledlgement
+const acknowledlgements = (errors) => {
+  if (errors) {
+    console.log("errors: ", errors);
+  } else {
+    console.log("Đã gởi tin nhắn thành công");
+  }
+};
+// Sự kiện sublit
+document.getElementById("form-messages").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const textMessage = document.getElementById("input-text").value;
+  document.getElementById("input-text").value = " ";
+  socket.emit("sendMessageToServer", textMessage, acknowledlgements);
+});
+
+// Nhận lại sự kiện từ server
+socket.on("sendMessageToClient", (textMessage) => {
+  console.log("textMessage:", textMessage);
+});

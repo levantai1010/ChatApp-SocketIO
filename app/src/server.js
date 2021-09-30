@@ -11,6 +11,7 @@ const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const path = require("path");
+const Filter = require("bad-words");
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -26,6 +27,11 @@ io.on("connection", (socket) => {
   console.log("Server connecting!");
   // Xử lý sự kiện nhận tin nhắn từ client
   socket.on("sendMessageToServer", (textMessage, callback) => {
+    // Xử lý từ khóa tục tĩu
+    const filter = new Filter();
+    if (filter.isProfane(textMessage)) {
+      return callback("Tin nhắn không hợp lệ");
+    }
     io.emit("sendMessageToClient", textMessage);
     callback();
   });
@@ -35,6 +41,6 @@ io.on("connection", (socket) => {
   });
 });
 const PORT = 3000;
-httpServer.listen(PORT, () => {
+httpServer.listen(process.env.PORT || PORT, () => {
   console.log(`server running on http://localhost:${PORT} `);
 });
