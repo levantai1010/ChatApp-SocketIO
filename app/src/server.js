@@ -26,36 +26,45 @@ app.use(express.static(path.join(__dirname, "../public")));
 
 io.on("connection", (socket) => {
   console.log("Server connecting!");
-  //Xử lý câu chào
-  socket.emit(
-    "sendMessageToClient",
-    `Chào mừng client ${socket.id} đén với phòng chat`
-  );
-  socket.broadcast.emit(
-    "sendMessageToClient",
-    `CLient ${socket.id} vừa mới tham gia vào phòng chat`
-  );
-  // Xử lý sự kiện nhận tin nhắn từ client
-  socket.on("sendMessageToServer", (textMessage, callback) => {
-    // Xử lý từ khóa tục tĩu
-    const filter = new Filter();
-    if (filter.isProfane(textMessage)) {
-      // return callback("Tin nhắn không hợp lệ");
-      return callback("Tin nhắn không hợp lệ");
-    }
-    // Gởi tin nhắn về cho tất cả các client
-    const messages = {
-      textMessage,
-      createAt: dateFormat("dd/MM/yyyy - hh:mm:ss", new Date()),
-    };
-    io.emit("sendMessageToClient", messages);
-    callback();
+
+  // Nhận sự kiện join từ cient
+  socket.on("joinRoom", ({ room, username }) => {
+    socket.join(room);
+    //Xử lý câu chào
+    socket.emit(
+      "sendMessageToClient",
+      `Chào mừng  ${username} đén với phòng ${room}`
+    );
+    socket.broadcast
+      .to(room)
+      .emit(
+        "sendMessageToClient",
+        `${username} vừa mới tham gia vào phòng ${room}`
+      );
+    // Xử lý sự kiện nhận tin nhắn từ client
+    socket.on("sendMessageToServer", (textMessage, callback) => {
+      // Xử lý từ khóa tục tĩu
+      const filter = new Filter();
+      if (filter.isProfane(textMessage)) {
+        // return callback("Tin nhắn không hợp lệ");
+        return callback("Tin nhắn không hợp lệ");
+      }
+
+      // Gởi tin nhắn về cho tất cả các client
+      const messages = {
+        textMessage,
+        createAt: dateFormat("dd/MM/yyyy - hh:mm:ss", new Date()),
+      };
+      io.to(room).emit("sendMessageToClient", messages);
+      callback();
+    });
+    // Nhận sự kiện share location từ client
+    socket.on("sendLocationToServer", ({ latitude, longitude }) => {
+      const linkLocation = `https://google.com/maps?q=${latitude},${longitude}`;
+      io.to(room).emit("sendLoactionToClient", linkLocation);
+    });
   });
-  // Nhận sự kiện share location từ client
-  socket.on("sendLocationToServer", ({ latitude, longitude }) => {
-    const linkLocation = `https://google.com/maps?q=${latitude},${longitude}`;
-    io.emit("sendLoactionToClient", linkLocation);
-  });
+
   // Sự kiện ngắt kết nối
   socket.on("disconnect", () => {
     console.log(`CLient ${socket.id} left server`);

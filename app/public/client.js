@@ -40,3 +40,9 @@ socket.on("sendLoactionToClient", (linkLocation) => {
 socket.on("sendMessageToClient", (messages) => {
   console.log("messages:", messages);
 });
+// Xử lý queryString
+const { room, username } = Qs.parse(location.search, {
+  ignoreQueryPrefix: true,
+});
+// Gởi event join lên server
+socket.emit("joinRoom", { room, username });
