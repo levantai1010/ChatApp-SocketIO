@@ -1,18 +1,11 @@
-// const express = require("express");
-// const app = express();
-// const PORT = 3000;
-// const path = require("path");
-// app.use("/public", express.static(path.join(__dirname, "public")));
-// app.listen(process.env.PORT || PORT, () => {
-//   console.log(`server running on ${PORT} `);
-// });
-
 const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const path = require("path");
 const Filter = require("bad-words");
-const dateFormat = require("date-format");
+
+const { createMessage } = require("./utils/create-messages");
+const { getUserList, addUser, removeUser } = require("./utils/users");
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -27,20 +20,30 @@ app.use(express.static(path.join(__dirname, "../public")));
 io.on("connection", (socket) => {
   console.log("Server connecting!");
 
-  // Nhận sự kiện join từ cient
+  // Nhận sự kiện joinRoom từ cient
   socket.on("joinRoom", ({ room, username }) => {
     socket.join(room);
     //Xử lý câu chào
     socket.emit(
       "sendMessageToClient",
-      `Chào mừng  ${username} đén với phòng ${room}`
+      createMessage(`Chào mừng  ${username} đén với phòng ${room}`)
     );
     socket.broadcast
       .to(room)
       .emit(
         "sendMessageToClient",
-        `${username} vừa mới tham gia vào phòng ${room}`
+        createMessage(`${username} vừa mới tham gia vào phòng ${room}`)
       );
+
+    // Xử lý userList(// Thêm user vào UserList)
+
+    addUser({
+      id: socket.id,
+      username,
+      room,
+    });
+    io.to(room).emit("sendUserListToClient", getUserList(room));
+
     // Xử lý sự kiện nhận tin nhắn từ client
     socket.on("sendMessageToServer", (textMessage, callback) => {
       // Xử lý từ khóa tục tĩu
@@ -51,11 +54,7 @@ io.on("connection", (socket) => {
       }
 
       // Gởi tin nhắn về cho tất cả các client
-      const messages = {
-        textMessage,
-        createAt: dateFormat("dd/MM/yyyy - hh:mm:ss", new Date()),
-      };
-      io.to(room).emit("sendMessageToClient", messages);
+      io.to(room).emit("sendMessageToClient", createMessage(textMessage));
       callback();
     });
     // Nhận sự kiện share location từ client
@@ -63,11 +62,11 @@ io.on("connection", (socket) => {
       const linkLocation = `https://google.com/maps?q=${latitude},${longitude}`;
       io.to(room).emit("sendLoactionToClient", linkLocation);
     });
-  });
-
-  // Sự kiện ngắt kết nối
-  socket.on("disconnect", () => {
-    console.log(`CLient ${socket.id} left server`);
+    // Sự kiện ngắt kết nối
+    socket.on("disconnect", () => {
+      removeUser(socket.id);
+      io.to(room).emit("sendUserListToClient", getUserList(room));
+    });
   });
 });
 const PORT = 3000;

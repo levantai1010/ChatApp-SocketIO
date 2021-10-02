@@ -42,7 +42,11 @@ socket.on("sendMessageToClient", (messages) => {
 });
 // Xử lý queryString
 const { room, username } = Qs.parse(location.search, {
-  ignoreQueryPrefix: true,
+  ignoreQueryPrefix: true, // Bỏ dấu ? trên trình duyệt
 });
 // Gởi event join lên server
 socket.emit("joinRoom", { room, username });
+// XỬ lý userList
+socket.on("sendUserListToClient", (userList) => {
+  console.log("UserList: ", userList);
+});
