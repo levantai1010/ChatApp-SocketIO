@@ -5,7 +5,7 @@ const path = require("path");
 const Filter = require("bad-words");
 
 const { createMessage } = require("./utils/create-messages");
-const { getUserList, addUser, removeUser } = require("./utils/users");
+const { getUserList, addUser, removeUser, findUser } = require("./utils/users");
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -26,13 +26,13 @@ io.on("connection", (socket) => {
     //Xử lý câu chào
     socket.emit(
       "sendMessageToClient",
-      createMessage(`Chào mừng  ${username} đén với phòng ${room}`)
+      createMessage(`Wellcome  ${username} to room ${room}`, "Admin")
     );
     socket.broadcast
       .to(room)
       .emit(
         "sendMessageToClient",
-        createMessage(`${username} vừa mới tham gia vào phòng ${room}`)
+        createMessage(`${username} joined room ${room}`, "Admin")
       );
 
     // Xử lý userList(// Thêm user vào UserList)
@@ -50,17 +50,22 @@ io.on("connection", (socket) => {
       const filter = new Filter();
       if (filter.isProfane(textMessage)) {
         // return callback("Tin nhắn không hợp lệ");
-        return callback("Tin nhắn không hợp lệ");
+        return callback("Invalid messages");
       }
 
       // Gởi tin nhắn về cho tất cả các client
-      io.to(room).emit("sendMessageToClient", createMessage(textMessage));
+      const user = findUser(socket.id);
+      io.to(room).emit(
+        "sendMessageToClient",
+        createMessage(textMessage, user.username)
+      );
       callback();
     });
     // Nhận sự kiện share location từ client
     socket.on("sendLocationToServer", ({ latitude, longitude }) => {
+      const user = findUser(socket.id);
       const linkLocation = `https://google.com/maps?q=${latitude},${longitude}`;
-      io.to(room).emit("sendLoactionToClient", linkLocation);
+      io.to(room).emit("sendLoactionToClient", linkLocation, user);
     });
     // Sự kiện ngắt kết nối
     socket.on("disconnect", () => {
@@ -69,7 +74,7 @@ io.on("connection", (socket) => {
     });
   });
 });
-const PORT = 3000;
-httpServer.listen(process.env.PORT || PORT, () => {
-  console.log(`server running on http://localhost:${PORT} `);
+
+httpServer.listen(process.env.PORT || 3000, () => {
+  console.log(`server running on http://localhost:3000 `);
 });

@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chat App</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-
     <!-- Bootstrap CSS -->
     <link
       rel="stylesheet"
@@ -16,23 +12,67 @@
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+      integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/css/chat.css" />
   </head>
+
   <body>
-    <form class="form-inline mt-5" id="form-messages">
-      <div class="form-group mx-sm-3 mb-2">
-        <input
-          class="form-control"
-          id="input-text"
-          placeholder="Write message here"
-        />
-      </div>
-      <button type="submit" class="btn btn-primary mb-2" id="btn-send-message">
-        Gởi
-      </button>
-      <button type="" class="btn btn-success mb-2 ml-2" id="btn-share-location">
-        Chia sẻ vị trí
-      </button>
-    </form>
+    <main class="row app">
+      <section class="col-md-3 col-sm-4 app__left">
+        <h1 class="text-center">
+          <span class="app__title" id="app__title">Chat App</span>
+        </h1>
+        <div class="app__title--line"></div>
+        <div class="app__list-user">
+          <ul class="app__list-user--content" id="app__list-user--content">
+            <!-- <li class="app__item-user">Cras justo odio</li> -->
+          </ul>
+        </div>
+      </section>
+
+      <section class="col-md-9 col-sm-8 app__right">
+        <div class="app__messages" id="app__messages">
+          <div class="message-item" id="message-item">
+            <!-- <div class="message__row1">
+              <p class="message__name">dsfhsdfkhasfs</p>
+              <p class="message__date">11/02/2021 - 12:56:01</p>
+            </div>
+            <div class="message__row2">
+              <p class="message__content">
+                hôm nay tui được đi đá banh , mừng qua các bạn ơi
+              </p>
+            </div> -->
+          </div>
+        </div>
+        <div class="app__send-messages">
+          <form id="form-messages" class="form-messages">
+            <div class="input-group h-100">
+              <div class="input-messages__wrapper">
+                <input type="text" id="input-messages" class="input-messages" />
+              </div>
+              <div class="input-group-append">
+                <button class="btn btn-success btn-send" type="submit">
+                  Send
+                </button>
+                <button
+                  class="btn btn-primary btn-location"
+                  id="btn-share-location"
+                  type="button"
+                >
+                  Send Location
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script
@@ -50,19 +90,12 @@
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
       crossorigin="anonymous"
     ></script>
-
+    <script src="/socket.io/socket.io.js"></script>
     <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"
-      integrity="sha512-WL6WGKMPBiM9PnHRYIn5YEtq0Z8XP4fkVb4qy7PP4vhmYQErJ/dySyXuFIMDf1eEYCXCrQrMJfkNwKc9gsjTjA=="
+      src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.6/qs.min.js"
+      integrity="sha512-3TmPrquYLaAsUmZKXRARTDC5siWhLAdBVqNo4dWpDABBtLU62AaoTaQJEvjxjExcZYurO6i1dnK85k8pPIBlRg=="
       crossorigin="anonymous"
-      referrerpolicy="no-referrer"
     ></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.1/qs.min.js"
-      integrity="sha512-aTKlYRb1QfU1jlF3k+aS4AqTpnTXci4R79mkdie/bp6Xm51O5O3ESAYhvg6zoicj/PD6VYY0XrYwsWLcvGiKZQ=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-    <script src="client.js"></script>
+    <script src="./client.js"></script>
   </body>
 </html>
