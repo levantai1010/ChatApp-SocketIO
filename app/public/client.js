@@ -1,4 +1,5 @@
 // const { findUser } = require("../src/utils/users");
+let levantai;
 
 const socket = io();
 
