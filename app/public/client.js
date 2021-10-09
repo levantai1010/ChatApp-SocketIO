@@ -45,7 +45,7 @@ socket.on("sendLoactionToClient", (linkLocation, user) => {
 });
 // Nhận lại tin nhắn từ server
 socket.on("sendMessageToClient", (messages) => {
-  console.log("messages:", messages);
+  // console.log("messages:", messages);
   document.getElementById("app__messages").innerHTML += `
   <div class="message-item">
             <div class="message__row1">
